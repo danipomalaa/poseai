@@ -7,7 +7,7 @@ export default function Dataset(props) {
 
   return (
     <div>
-      <p>Dataset</p>
+      <p>Register</p>
     </div>
   )
 }

@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-export default function Traing(props) {
+export default function Member(props) {
 
   useEffect(() => {
   }, [])
 
   return (
     <div>
-      <p>Training</p>
+      <p>Member</p>
     </div>
   )
 }
