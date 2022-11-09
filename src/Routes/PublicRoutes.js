@@ -1,4 +1,3 @@
-import { Header,Footer } from "Component/index";
 import React from "react";
 import { BrowserRouter as Router, Route,Switch } from "react-router-dom";
 import { dataRouters } from "./Data";

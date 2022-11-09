@@ -9,14 +9,13 @@ import MultiProvider from "./Config/MultiProvider"
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <MultiProvider
-  providers={[
+    providers={[
       <Provider.SampleProvider key={0} />
-  ]}
+    ]}
   >
     <React.StrictMode>
       <App />
     </React.StrictMode>
-  <ToastContainer />
   </MultiProvider>
 );
 

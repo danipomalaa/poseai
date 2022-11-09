@@ -1,9 +1,9 @@
 import React from "react";
 import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
-import "App.css"
+import "./App.css"
 
 // components
-import Routes from "Routes/PublicRoutes";
+import Routes from "./Routes/PublicRoutes";
 
 export default function App() {
   return (
@@ -12,9 +12,9 @@ export default function App() {
         <Route
           exact
           path="/"
-          render={() => <Redirect to="/app/operational" />}
+          render={() => <Redirect to="/app" />}
         />
-        <PublicRoute path="/app/operational" component={Routes} />
+        <PublicRoute path="/app" component={Routes} />
       </Switch>
     </HashRouter>
   );
