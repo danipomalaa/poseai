@@ -3,12 +3,21 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import Provider from "./Context"
+import MultiProvider from "./Config/MultiProvider"
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <MultiProvider
+  providers={[
+      <Provider.SampleProvider key={0} />
+  ]}
+  >
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  <ToastContainer />
+  </MultiProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
