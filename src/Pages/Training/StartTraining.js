@@ -26,7 +26,7 @@ export default function StartTraining() {
 
     const videoConstraints = {
         width: "100%",
-        // height: 800,
+        height: "100%",
         facingMode: "environment"
       };
   return (
@@ -54,7 +54,7 @@ export default function StartTraining() {
 
         <Webcam
             audio={false}
-            // height={800}
+            height={"100%"}
             screenshotFormat="image/jpeg"
             ref={webcamRef}
             width={"100%"}
