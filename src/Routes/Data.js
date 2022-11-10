@@ -6,7 +6,9 @@ import {
   Training,
   Dataset,
   AddKata,
-  AddDataset
+  AddDataset,
+  AddTraining,
+  StartTraining
 } from '../Pages/index'
 
 const dataRouters = [
@@ -65,6 +67,20 @@ const dataRouters = [
     main: true,
     path: '/app/training',
     page: Training,
+  },
+  {
+    id: 6,
+    name: 'AddTraining',
+    main: false,
+    path: '/app/training/addtraining',
+    page: AddTraining,
+  },
+  {
+    id: 6,
+    name: 'StartTraining',
+    main: false,
+    path: '/app/training/starttraining',
+    page: StartTraining,
   }
 ]
 
