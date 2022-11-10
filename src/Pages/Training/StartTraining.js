@@ -81,11 +81,12 @@ export default function StartTraining() {
         <Webcam
             style={{position:'absolute', top:0, left:0, zIndex:-10}}
             audio={false}
+            mirrored={true}
             height={size.height} 
             width={size.width}
             screenshotFormat="image/jpeg"
             ref={webcamRef}
-            videoConstraints={{facingMode: 'environment', aspectRatio: ratio}}
+            videoConstraints={{facingMode: 'user', aspectRatio: ratio}}
         />
          {/* <button onClick={capture}>Capture photo</button> */}
         <div style={{backgroundColor:"#EFEFEF", opacity:0.5, padding:10, position:'absolute', bottom:100, left:40, minWidth:150}}>
