@@ -30,14 +30,12 @@ export default function Dataset(props) {
                       <MoreVertIcon />
                     </IconButton>
                   }
-                  title="Shrimp and Chorizo Paella"
-                  subheader="September 14, 2016"
+                  title="Kata 1"
+                  subheader="8 rangkaian gerakan dasar"
                 />
                 <CardContent>
                   <Typography variant="body2" color="text.secondary">
-                    This impressive paella is a perfect party dish and a fun meal to cook
-                    together with your guests. Add 1 cup of frozen peas along with the mussels,
-                    if you like.
+                    20 Dataset
                   </Typography>
                 </CardContent>
               </Card>
