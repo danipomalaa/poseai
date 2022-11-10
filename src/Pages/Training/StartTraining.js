@@ -27,7 +27,7 @@ export default function StartTraining() {
     const videoConstraints = {
         width: "100%",
         // height: 800,
-        facingMode: "user"
+        facingMode: "enviroment"
       };
   return (
     <Container maxWidth="sm">
