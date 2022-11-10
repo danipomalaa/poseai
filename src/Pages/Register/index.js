@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-export default function Dataset(props) {
+export default function Register(props) {
 
   useEffect(() => {
   }, [])

@@ -6,7 +6,7 @@ function Routers() {
 
   return (
     <Switch>
-      <div class="bgroute" style={{backgroundColor:'#E4E4E4', flex:1, height:'100%'}}>
+      <div style={{ flex:1, height:'100%'}}>
       {
           dataRouters.map((item,index)=>(
             <Route key={index} exact path={item.path} component={item.page} />

@@ -1,6 +1,8 @@
 export { default as Home } from './Home'
 export { default as Attendance } from './Attendance'
 export { default as Dataset } from './Dataset'
+export { default as AddKata } from './Dataset/AddKata'
+export { default as AddDataset } from './Dataset/AddDataset'
 export { default as Member } from './Member'
 export { default as Register } from './Register'
 export { default as Training } from './Training'

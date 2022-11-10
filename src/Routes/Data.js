@@ -3,9 +3,11 @@ import {
   Home,
   Member,
   Register,
-  Training
+  Training,
+  Dataset,
+  AddKata,
+  AddDataset
 } from '../Pages/index'
-import Dataset from '../Pages/Register'
 
 const dataRouters = [
   {
@@ -27,6 +29,18 @@ const dataRouters = [
     page: Dataset,
   },
   {
+    id: 31,
+    name: 'AddKata',
+    path: '/app/dataset/addkata',
+    page: AddKata,
+  },
+  {
+    id: 32,
+    name: 'AddDataset',
+    path: '/app/dataset/adddataset',
+    page: AddDataset,
+  },
+  {
     id: 4,
     name: 'Member',
     path: '/app/member',
@@ -35,7 +49,7 @@ const dataRouters = [
   {
     id: 5,
     name: 'Register',
-    path: '/app/register',
+    path: '/app/registration',
     page: Register,
   },
   {
