@@ -8,7 +8,8 @@ import {
   AddKata,
   AddDataset,
   AddTraining,
-  StartTraining
+  StartTraining,
+  DojoProfile
 } from '../Pages/index'
 
 const dataRouters = [
@@ -60,6 +61,13 @@ const dataRouters = [
     main: true,
     path: '/app/registration',
     page: Register,
+  },
+  {
+    id: 5,
+    name: 'Dojo',
+    main: false,
+    path: '/app/registration/dojo',
+    page: DojoProfile,
   },
   {
     id: 6,
