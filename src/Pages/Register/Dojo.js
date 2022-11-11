@@ -28,8 +28,8 @@ export default function Dojo(props) {
             <Typography variant="h6" sx={{fontWeight:'bold', mt:2}}>Kontak</Typography>
             <Typography sx={{fontStyle:'italic', fontSize:14, color:'#AFAFAF'}}>Lorem Ipsum.Lorem Ipsum.Lorem Ipsum.Lorem Ipsum.Lorem Ipsum.Lorem Ipsum.Lorem Ipsum</Typography>
         </Box>
-       <AppBar position="fixed" sx={{ top: 'auto', backgroundColor:"#2f2f2f", opacity:0.5, bottom: 0, p:1, backgroundColor:'white' }}>
-            <Button variant="contained" color="secondary" style={{ width:'100%'}}>Registrasi</Button>
+       <AppBar position="fixed" sx={{ top: 'auto', backgroundColor:"#2f2f2f", bottom: 0, p:1, backgroundColor:'white' }}>
+            <Button variant="contained" color="secondary" style={{ width:'100%'}} onClick={()=>props.history.push('/app/registration/form')}>Registrasi</Button>
         </AppBar>
     </Container>
   )

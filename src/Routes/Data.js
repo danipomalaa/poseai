@@ -9,7 +9,9 @@ import {
   AddDataset,
   AddTraining,
   StartTraining,
-  DojoProfile
+  DojoProfile,
+  FormRegistration,
+  SuccessRegistration
 } from '../Pages/index'
 
 const dataRouters = [
@@ -68,6 +70,20 @@ const dataRouters = [
     main: false,
     path: '/app/registration/dojo',
     page: DojoProfile,
+  },
+  {
+    id: 5,
+    name: 'FormRegistration',
+    main: false,
+    path: '/app/registration/form',
+    page: FormRegistration,
+  },
+  {
+    id: 5,
+    name: 'SuccessRegistration',
+    main: false,
+    path: '/app/registration/success',
+    page: SuccessRegistration,
   },
   {
     id: 6,
