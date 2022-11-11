@@ -39,6 +39,7 @@ function useWindowSize() {
 
 export default function StartTraining() {
     const [open, setOpen] = useState(true)
+    const [imgList, setImgList] = useState([])
     const size = useWindowSize();
     const handleClose = ()=>{
         setOpen(false)
@@ -48,12 +49,11 @@ export default function StartTraining() {
     const ratio = isLandscape ? size.width / size.height : size.height / size.width;
 
     const webcamRef = React.useRef(null);
-    const capture = React.useCallback(
-        () => {
+    const capture = ()=>{
         const imageSrc = webcamRef.current.getScreenshot();
-        },
-        [webcamRef]
-    );
+        console.log('imgList', imgList)
+        setImgList([...imgList, imageSrc])
+    }
 
   return (
     <Container maxWidth="sm">
@@ -102,9 +102,15 @@ export default function StartTraining() {
             }
            
         </div>
-
-        <AppBar position="fixed" sx={{ top: 'auto', backgroundColor:"#2f2f2f", opacity:0.5, bottom: 0, p:1, backgroundColor:'white' }}>
-            <Button variant="contained" color="secondary" style={{ width:'100%'}}>Rekam</Button>
+        <div style={{display:'flex', overflowX:'scroll', WebkitOverflowScrolling:'touch', position:'absolute', bottom:50,}}>
+            {imgList.map(itemImg=>{
+                return(
+                    <img src={itemImg} style={{height:100}} />
+                )
+            })}
+        </div>
+        <AppBar position="fixed" sx={{ top: 'auto', backgroundColor:"#2f2f2f", bottom: 0, p:1, backgroundColor:'white' }}>
+            <Button variant="contained" color="secondary" style={{ width:'100%'}} onClick={capture}>Rekam</Button>
         </AppBar>
     </Container>
   )
