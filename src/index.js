@@ -10,7 +10,8 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <MultiProvider
     providers={[
-      <Provider.SampleProvider key={0} />
+      <Provider.SampleProvider key={0} />,
+      <Provider.PoseProvider key={1} />,
     ]}
   >
     <React.StrictMode>

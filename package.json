@@ -5,11 +5,17 @@
   "private": true,
   "dependencies": {
     "@emotion/styled": "^11.10.5",
+    "@mediapipe/pose": "^0.5.1635988162",
     "@mui/icons-material": "^5.5.1",
     "@mui/lab": "^5.0.0-alpha.73",
     "@mui/material": "^5.5.1",
     "@mui/styles": "^5.5.1",
     "@mui/x-date-pickers": "^5.0.0-beta.1",
+    "@tensorflow-models/facemesh": "^0.0.5",
+    "@tensorflow-models/pose-detection": "^2.0.0",
+    "@tensorflow/tfjs-backend-webgl": "3.20.0",
+    "@tensorflow/tfjs-converter": "3.20.0",
+    "@tensorflow/tfjs-core": "3.20.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -25,6 +31,7 @@
     "react-scripts": "5.0.1",
     "react-select": "^4.3.1",
     "react-webcam": "^7.0.1",
+    "scatter-gl": "^0.0.13",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
