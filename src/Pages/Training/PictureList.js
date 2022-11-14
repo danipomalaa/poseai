@@ -75,7 +75,7 @@ export default function PictureList(props) {
                 setDataPosePicture(pose.keypoints)
             }
             if (pose.keypoints3D != null) {
-                detect_scatter(pose.keypoints3D)
+                // detect_scatter(pose.keypoints3D)
                 setDataPosePicture3D(pose.keypoints3D)
             }
             
@@ -401,7 +401,7 @@ export default function PictureList(props) {
                 <Button variant="contained" color="secondary" onClick={props.deletedata} >Hapus</Button>
                 <br/>
                 <div style={{border:"1px solid #000"}}>
-                    <div ref={scatter_gl}></div>
+                    <div ref={scatter_gl} style={{display:'none'}}></div>
                 </div>
                 <div style={{display:'none'}}>
                     <Table style={{marginBottom:5, display:'none'}}>
