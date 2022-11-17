@@ -16,89 +16,48 @@ import * as posedetection from '@tensorflow-models/pose-detection';
 import PictureList from './PictureList';
 import Kata1Video from './kata1.mp4'
 
-function useWindowSize() {
-    // Initialize state with undefined width/height so server and client renders match
-    // Learn more here: https://joshwcomeau.com/react/the-perils-of-rehydration/
-    const [windowSize, setWindowSize] = useState({
-      width: undefined,
-      height: undefined,
-    });
-    useEffect(() => {
-      // Handler to call on window resize
-      function handleResize() {
-        // Set window width/height to state
-        setWindowSize({
-          width: window.innerWidth,
-          height: window.innerHeight,
-        });
-      }
-      // Add event listener
-      window.addEventListener("resize", handleResize);
-      // Call handler right away so state gets updated with initial window size
-      handleResize();
-      // Remove event listener on cleanup
-      return () => window.removeEventListener("resize", handleResize);
-    }, []); // Empty array ensures that effect is only run on mount
-    return windowSize;
-}
+import useQuery from '../../Utils/QueryParams';
 
-export default function StartTraining() {
+// w
+
+export default function StartTraining(props) {
     const [open, setOpen] = useState(true)
     const [imgList, setImgList] = useState([])
-    const size = useWindowSize();
+    // const size = useWindowSize();
     const handleClose = ()=>{
         setOpen(false)
+        setOpenFinish(false)
     }
 
-    const isLandscape = size.height <= size.width;
-    const ratio = isLandscape ? size.width / size.height : size.height / size.width;
+    let query = useQuery();
+    const size_width = query.get("width")
+    const size_height = query.get("height")
+    const isLandscape = query.get("isLandscape")
+    const ratio = query.get("ratio")
+
+    // const isLandscape = size.height <= size.width;
+    // const ratio = isLandscape ? size.width / size.height : size.height / size.width;
 
     const webcamRef = React.useRef(null);
     const audioRef = React.useRef(null);
 
     function makeid(length) {
-        var result           = '';
-        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var charactersLength = characters.length;
-        for ( var i = 0; i < length; i++ ) {
-          result += characters.charAt(Math.floor(Math.random() * charactersLength));
-       }
-       return result;
-    }
+      var result           = '';
+      var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ012456789';
+      var charactersLength = characters.length;
+      for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+     }
+     return result;
+  }
 
     const capture = ()=>{
-        // const imageSrc = webcamRef.current.getScreenshot();
-        // console.log('imgList', imgList)
-        // setImgList([...imgList, imageSrc])
-
-        const video = webcamRef.current
-        const videoWidth = video.videoWidth
-        const videoHeight = video.videoHeight
-
-        video.width = videoWidth
-        video.height= videoHeight
-
-        canvasSnapRef.current.width = videoWidth
-        canvasSnapRef.current.height = videoHeight
-        var ctxSnap = canvasSnapRef.current.getContext("2d");
-        ctxSnap.drawImage(video, 0, 0, canvasSnapRef.current.width, canvasSnapRef.current.height);
-        // console.log('ctxSnap', ctxSnap)
-        //convert to desired file format
-        console.log('canvasSnapRef.current', canvasSnapRef.current)
-        var dataURI = canvasSnapRef.current.toDataURL('image/jpeg'); // can also use 'image/png'
-        console.log('dataURI', dataURI)
-
-        // setImageScreenShoot(dataURI)
-        
-        // let _dataPose = dataPose
-        // setDataPoseScreenShoot(dataPose)
-
-        let dataTake = {id: makeid(10), img: dataURI}
-        let dataConcat = [...imgList, dataTake]
-
-            
-
-        setImgList(dataConcat)
+        const _start = !start
+        const imageSrc = webcamRef.current.getScreenshot();
+        console.log('imgList', imgList)
+        setImgList([...imgList, {img:imageSrc, time: timer} ])
+        addPose({id:makeid(5),label:"", img:imageSrc, time: timer})
+        return _start
     }
 
     const [timer, setTimer] = useState(0); // 25 minutes
@@ -106,96 +65,81 @@ export default function StartTraining() {
     const firstStart = useRef(true);
     const tick = useRef(); // <-- React ref
 
+    const buttonRecording = async() =>{
+      const res = await toggleStart()
+      console.log('timer', timer)
+      if(res){
+        setStartRecording(false)
+      }
+      else{
+        setStartRecording(true)
+      }
+    }
+    
+
     useEffect(() => {
         if (firstStart.current) {
           firstStart.current = !firstStart.current;
           return;
         }
-        cekTimer()
-        capturePose()
-        if (start) {
+        if (start || startRecording) {
           tick.current = setInterval(() => { // <-- set tick ref current value
-            setTimer((timer) => timer + 1);
+            setTimer((timer) => {
+              let _timer = timer + 1
+              console.log('_timer', _timer)
+              capturePose(_timer)
+              return _timer
+            });
           }, 1000);
         } else {
           clearInterval(tick.current); // <-- access tick ref current value
         }
         return () => clearInterval(tick.current); // <-- clear on unmount!
-      }, [start, cekTimer, capturePose]);
+      }, [start, capturePose]);
 
       function capturePose(){
-        // const captureListCheck = kihonList.filter(x=>x === timer)
-        // if(captureListCheck.length == 1 && !start){
-        //     setTimeout(() => {
-        //         // play_audio()
-        //         // setStart(true)
-        //         capture()
-        //     }, 2000);
-        // }
+        const captureListCheck = kihonList.filter(x=>x === (timer))
+        console.log('captureListCheck', captureListCheck.length, 'start', start, 'timer', timer, 'startRecording', startRecording)
+        if(captureListCheck.length == 1){
+          capture();
+          if(timer === 90)
+          {
+            setOpenFinish(true)
+          }
+        }
       }
-      
-      function cekTimer(){
-        // console.log('timer', timer)
-        // const captureListCheck = kihonList.filter(x=>x === timer)
-        // console.log('captureListCheck', captureListCheck)
-        // console.log('start', start)
-        // if(captureListCheck.length == 1){
-        //     stop_audio()
-        //     setStart(false)
-        //     capturePose()
-        // }
-      }
-
-    const kihonList = [6,9,13,16,20,25,28,32,37,43,47,50,52,57,60,64,68,73,78,84,90]
-
-    const playRecording = ()=>{
-
-    }
-
-    const [timerRecording, setTimerRecording] = useState(0)
 
     const [startRecording, setStartRecording] = useState(false)
 
-    const { dataPoses, addPose, deletePose, changeLabel } = useContext(PoseContext)
+    const { dataPoses, addPose, deletePose, changeLabel, kihonList } = useContext(PoseContext)
 
     const play_audio = ()=>{
         const audio = audioRef.current
-        setStartRecording(true)
         audio.play()
     }
 
     const stop_audio = ()=>{
         const audio = audioRef.current
-        setStartRecording(false)
         audio.pause()
     }
 
     const toggleStart = () => {
-        setStart(!start);
-    };
-
-    const deletedata = (id)=>{
-        const changeData = imgList.filter(x=>x.id !== id)
-        deletePose(id)
-        setImgList(changeData)
-      }
-
-    const [displayImage, setDisplayImage] = useState(true)
-
-    const changeData = (e, id)=>{
-        const changeData = imgList.map(item=>{
-          if(id === item.id){
-            return {...item, label: e.target.value}
+      const buff = !start
+        setStart(()=>{
+          if(buff){
+            play_audio()
           }
           else{
-            return item
+            stop_audio()
           }
-        })
-        setImgList(changeData)
-      }
+          return buff
+        });
+      return buff
+    };
 
-    const canvasSnapRef = useRef(null)
+    const [openFinish,setOpenFinish] = useState(false)
 
+    
   return (
     <Container maxWidth="sm">
         <Dialog
@@ -218,43 +162,39 @@ export default function StartTraining() {
                 </Button>
             </DialogActions>
         </Dialog>
+
+        <Dialog
+            open={openFinish}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">
+            Lanjut Penilaian
+            </DialogTitle>
+            <DialogContent dividers>
+                <DialogContentText id="alert-dialog-description">
+                   Lanjutkan proses penilaian dengan pelatihan AI anda.
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={()=>{props.history.push('/app/training/estimation')
+                }} autoFocus>
+                    Proses
+                </Button>
+            </DialogActions>
+        </Dialog>
         
-        {/* <Webcam
+        <Webcam
             style={{position:'absolute', top:0, left:0, zIndex:-10}}
             audio={false}
             mirrored={true}
-            height={size.height} 
-            width={size.width}
+            height={size_height} 
+            width={size_width}
             screenshotFormat="image/jpeg"
             ref={webcamRef}
             videoConstraints={{facingMode: 'user', aspectRatio: ratio}}
-        /> */}
-        <div style={{position:"relative", border:"1px solid #000", width:300, height:100, textAlign:'center'}}>
-            <video ref={webcamRef} 
-                // src="https://danipomalaa.github.io/karateai/static/media/kata1.cf119420ef19f8257186.mp4" 
-                src={Kata1Video}
-                screenshotFormat="image/jpeg"
-                controls
-                style={{
-                position:'absolute',
-                width:size.width, height:size.height,
-                top:0, left:0,
-                zIndex:10,
-                textAlign:'center'
-            }} />
-
-            <canvas ref={canvasSnapRef} style={{
-                    position:'absolute',
-                    border:"1px solid #000",
-                    width:size.width, height:size.height,
-                    top:0, left:0,
-                    // marginLeft:'auto',
-                    // marginRight:'auto',
-                    zIndex:8,
-                    textAlign:'center'
-                    }}
-            />
-        </div>
+        />
         
          {/* <button onClick={capture}>Capture photo</button> */}
         <div style={{backgroundColor:"#EFEFEF", opacity:0.5, padding:10, position:'absolute', bottom:100, left:40, minWidth:150}}>
@@ -270,43 +210,33 @@ export default function StartTraining() {
             }
            
         </div>
-        <div style={{display:'flex', overflowX:'scroll', WebkitOverflowScrolling:'touch', position:'absolute', bottom:50,zIndex:10}}>
+        <div style={{position:'absolute', bottom:50,zIndex:10}}>
+            <Grid container spacing={2}>
+              
             
             {imgList.map((itemTake,index)=>{
                 return(
-                    <PictureList displayImage={displayImage} deletedata={()=>deletedata(itemTake.id)} change={e=>changeData(e, itemTake.id)} label={itemTake.label} video={webcamRef.current} data={itemTake} index={index}/>
-                    // <img src={itemImg} style={{height:100}} />
+                    <Grid item xs="3">
+                      <img src={itemTake.img} style={{width:'100%'}} />
+                      <br/>
+                      <div style={{color:'white', backgroundColor:'black', width:'100%', fontSize:'bold'}}>Time :{itemTake.time}</div>
+                    </Grid>
                 )
             })}
+            </Grid>
         </div>
-        {/* <h1>{timer}</h1> */}
+        <h1 style={{color:'white'}}>Timer : {timer} Player : {start? "Start": "Stop"} </h1>
+        <h1 style={{color:'white'}}>Timeline : {JSON.stringify(kihonList)} </h1>
         <audio ref={audioRef} src={kata1audio} controls style={{display:'none'}}/>
-        <Button variant="contained" color="primary" onClick={toggleStart}>{!start ? "START" : "STOP"}</Button>
         <AppBar position="fixed" sx={{ top: 'auto', backgroundColor:"#2f2f2f", bottom: 0, p:1, backgroundColor:'white' }}>
             <Button variant="contained" color="secondary" style={{ width:'100%'}} onClick={()=>{
-                const video = webcamRef.current;
-                if(!start){
-                    // stop_audio()
-                    video.pause()
-                     toggleStart()
-                    // capture()
-                }else{
-                    // play_audio()
-                    video.play()
-                     toggleStart()
-                }}}>{
-
-                    !start ? "Pause" : "Play"
-                }
+                buttonRecording()
+            }}>
+            {
+              start ? "Pause" : "Play"
+            }
                 
             </Button>
-
-            <Button variant="contained" color="secondary" style={{ width:'100%'}} onClick={()=>{
-                capture()
-            }}>
-                Take Capture
-            </Button>
-
         </AppBar>
     </Container>
   )

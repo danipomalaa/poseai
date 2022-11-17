@@ -11,7 +11,8 @@ import {
   StartTraining,
   DojoProfile,
   FormRegistration,
-  SuccessRegistration
+  SuccessRegistration,
+  PoseEstimation
 } from '../Pages/index'
 
 const dataRouters = [
@@ -105,6 +106,13 @@ const dataRouters = [
     main: false,
     path: '/app/training/starttraining',
     page: StartTraining,
+  },
+  {
+    id: 6,
+    name: 'PoseEstimation',
+    main: false,
+    path: '/app/training/estimation',
+    page: PoseEstimation,
   }
 ]
 

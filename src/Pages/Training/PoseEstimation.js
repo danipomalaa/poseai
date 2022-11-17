@@ -1,15 +1,36 @@
-import { Button, Table, TableCell, TableRow, TextField } from '@mui/material'
-import React, {useRef, useState, useContext} from 'react'
+import { FormControl,Container,TextField, InputLabel, Typography, 
+    Button, IconButton, Select, MenuItem, ButtonGroup, Grid, AppBar } from '@mui/material'
+import React, { useState, useEffect, useRef, useContext, createRef } from 'react'
+import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import CheckIcon from '@mui/icons-material/Check';
+import Webcam from "react-webcam";
+import kata1audio from './../../SourceMedia/kata1.mp3'
+import "./style.css"
+import { PoseContext } from "./../../Context/index"
+import PictureList from './PictureList';
+
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Divider from '@mui/material/Divider';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
+
 import * as posedetection from '@tensorflow-models/pose-detection';
 import * as scatter from 'scatter-gl';
 import * as mpPose from '@mediapipe/pose';
-import { PoseContext } from "./../../Context/index"
 import '@tensorflow/tfjs-backend-webgl';
+import useQuery from '../../Utils/QueryParams';
 
-export default function PictureList(props) {
+export default function PoseEstimation(props) {
+    const { dataPoses, getDataPose, addPose, deletePose, changeLabel, kihonList } = useContext(PoseContext)
 
-  const { dataPoses, addPose, deletePose, changeLabel } = useContext(PoseContext)
-  const [dataPosePicture3D, setDataPosePicture3D] = useState([])
+    const [dataPosePicture3D, setDataPosePicture3D] = useState([])
   const [dataPosePicture, setDataPosePicture] = useState([])
 
     const [sudutSikuKiri, setSudutSikuKiri] = useState(0)
@@ -17,8 +38,7 @@ export default function PictureList(props) {
     const [sudutKakiKiri, setSudutKakiKiri] = useState(0)
     const [sudutKakiKanan, setSudutKakiKanan] = useState(0)
     const [orientasiPose, setOrientasiPose] = useState(0)
-    const imgRef = useRef()
-    const canvasScreenShootRef = useRef()
+    // const imgRef = useRef()
     const scatter_gl = useRef()
 
     const ANCHOR_POINTS = [[0, 0, 0], [0, 1, 0], [-1, 0, 0], [-1, -1, 0]];
@@ -36,7 +56,9 @@ export default function PictureList(props) {
      return result;
   }
 
-    const detectPose = async ()=>{
+  
+
+  const detectPose = async (imgRef, canvasRef, indexPose)=>{
         
         const model = posedetection.SupportedModels.BlazePose;
         console.log('model', model)
@@ -49,52 +71,42 @@ export default function PictureList(props) {
         };
         console.log('detectorConfig', detectorConfig)
         const detector = await posedetection.createDetector(model, detectorConfig)
-        console.log('poses detector', detector)
-        console.log('poses imgRef', imgRef.current)
-        console.log('poses canvasScreenShootRef', canvasScreenShootRef.current)
-
-        const poses = await detector.estimatePoses(imgRef.current,{maxPoses: 1, flipHorizontal: false});
+        console.log('imgRef', imgRef)
+        console.log('imcanvasRefgRef', canvasRef)
+        const poses = await detector.estimatePoses(imgRef,{maxPoses: 1, flipHorizontal: false});
         console.log('poses', poses)
-        let dataTake = {id: props.data.id, label:props.data.label, index: props.index, img: props.data.img, pose : poses[0]}
-        alert('Detect Pose')
+        console.log('Detect Pose ', indexPose)
         runCalculateAngle(poses[0])
 
         
-        const videoWidth = imgRef.current.width
-        const videoHeight = imgRef.current.height
+        const videoWidth = imgRef.width
+        const videoHeight = imgRef.height
 
-        imgRef.current.width = videoWidth
-        imgRef.current.height= videoHeight
+        imgRef.width = videoWidth
+        imgRef.height= videoHeight
 
-        canvasScreenShootRef.current.width = videoWidth
-        canvasScreenShootRef.current.height = videoHeight
+        canvasRef.width = videoWidth
+        canvasRef.height = videoHeight
 
         for (const pose of poses) {
             if (pose.keypoints != null) {
-              console.log('pose keypoint', pose.keypoints)
-                const ctx = canvasScreenShootRef.current.getContext("2d")
+                const ctx = canvasRef.getContext("2d")
                 drawKeypoints(pose.keypoints, ctx);
                 drawSkeleton(pose.keypoints, pose.id, ctx);
                 setDataPosePicture(pose.keypoints)
             }
             if (pose.keypoints3D != null) {
-                // detect_scatter(pose.keypoints3D)
                 setDataPosePicture3D(pose.keypoints3D)
             }
-            
         }
-        return {detect: true, pose : poses}
-    //    addPose(dataTake)
-
-       
     }
 
     const [scatterGLHasInitialized, setScatterGLHasInitialized] = useState(false)
     const [scatterGLState, setScatterGLState] = useState(null)
 
-    const detect_scatter = async(keypoints)=>{
-        const videoWidth = imgRef.current.width
-        const videoHeight = imgRef.current.height
+    const detect_scatter = async(imgRef, keypoints)=>{
+        const videoWidth = imgRef.width
+        const videoHeight = imgRef.height
         console.log('setScatterGLHasInitialized', scatterGLHasInitialized)
         let _scatterGL = null
         if(!scatterGLHasInitialized)
@@ -374,126 +386,80 @@ export default function PictureList(props) {
         setLabelPose(e.target.value)
         changeLabel(props.data.id, e.target.value)
     }
-    
-    return (
-        <div style={{width:'100%', margin:2}}>
-            <p>Take : {props.index+1}</p>
-            {/* <TextField value={labelPose} onChange={changeLabelLocal} placeholder="Masukan Nama Label" /> */}
-            <div style={{position:'relative',height:280}}>
-                {
-                    props.displayImage ? 
-                    <>
-                        <img src={props.data.img} ref={imgRef} style={{position:'absolute', width:'100%', zIndex:9}} />
-                        <canvas ref={canvasScreenShootRef} style={{position:'absolute', width:'100%', zIndex:11}} />
-                    </>:
-                    <>
-                        <img src={props.data.img} ref={imgRef} style={{position:'absolute', display:'none', width:'100%',  zIndex:9}} />
-                        <canvas ref={canvasScreenShootRef} style={{position:'absolute', width:'100%', backgroundColor:'black', zIndex:11}} />
-                    </>
-                }
+
+    const pictureList = useRef([])
+    const canvasScreenShootRef = useRef([])
+    const imgSampleRef = useRef()
+    const canvasSampleRef = useRef()
+
+    const [dataPoseLocal, setDataPoseLocal] = useState([])
+
+    const getData = async()=>{
+        const resPose = await getDataPose()
+        console.log('resPose', resPose)
+        pictureList.current = resPose.map((_, i) => pictureList.current[i] ?? createRef());
+        canvasScreenShootRef.current = resPose.map((_, i) => canvasScreenShootRef.current[i] ?? createRef());
+        setDataPoseLocal(resPose)
+    }
+
+    useEffect(()=>{
+        getData()
+    }, [])
+
+  return (
+    <Container maxWidth="sm">
+        {
+           dataPoses.map((itemTake,index)=>{
+            return (
+                <>
+                    <div style={{position:'relative',height:280}}>
+                        <canvas ref={canvasScreenShootRef.current[index]} style={{position:'absolute', width:'100%', zIndex:11}} />
+                        <img ref={pictureList.current[index]} src={itemTake.img} style={{width:'100%'}} />
+                    </div>
+                    {/* <div>
+                        <p>Siku ... Kiri : {Math.round(sudutSikuKiri)} ({Math.round(sudutSikuKiri)-180}) &nbsp; - Kanan : {Math.round(sudutSikuKanan)} ({Math.round(sudutSikuKanan)-180})</p>
+                        <p>Kaki ... Kiri : {Math.round(sudutKakiKiri)} ({Math.round(sudutKakiKiri)-180}) &nbsp; - Kanan : {Math.round(sudutKakiKanan)} ({Math.round(sudutKakiKanan)-180})</p>
+                        <p>Rotasi Badan : {Math.round(orientasiPose)}</p>
+                    </div> */}
+                </>
+            )
+            // <PictureList ref={pictureList[]} displayImage={true} data={itemTake} index={index}/>
+            })
+        }
+
+        
+        <AppBar position="fixed" sx={{ top: 'auto', backgroundColor:"#2f2f2f", bottom: 0, p:1, backgroundColor:'white' }}>
+            <Button variant="contained" color="secondary" style={{ width:'100%'}} onClick={async ()=>{
+
+                const model = posedetection.SupportedModels.BlazePose;
+                const detectorConfig = {
+                runtime: 'tfjs',
+                enableSmoothing: true,
+                modelType: 'full'
+                };
+                const detector = await posedetection.createDetector(model, detectorConfig)
+                const poses = await detector.estimatePoses(pictureList.current[0].current,{maxPoses: 1, flipHorizontal: false});
+                console.log('Initialisasi Pose Detection', poses)
+
+                setTimeout(()=>{
+                    dataPoseLocal.forEach((itemPose,indexPose)=>{
+                        const imgRef = pictureList.current[indexPose]
+                        const canvasRef = canvasScreenShootRef.current[indexPose]
+                        detectPose(imgRef.current,canvasRef.current, indexPose)
+                    })
+                }, 2000)
                 
-            </div>
-            {/* <p>Score Pose Detection : {props.data.pose && props.data.pose.length>0 ? Math.floor((props.data.pose[0].score)*100): "-"}</p> */}
-            <div>
-                <p>Siku ... Kiri : {Math.round(sudutSikuKiri)} ({Math.round(sudutSikuKiri)-180}) &nbsp; - Kanan : {Math.round(sudutSikuKanan)} ({Math.round(sudutSikuKanan)-180})</p>
-                <p>Kaki ... Kiri : {Math.round(sudutKakiKiri)} ({Math.round(sudutKakiKiri)-180}) &nbsp; - Kanan : {Math.round(sudutKakiKanan)} ({Math.round(sudutKakiKanan)-180})</p>
-                <p>Rotasi Badan : {Math.round(orientasiPose)}</p>
-                <Button variant="contained" color="primary" tooltip={JSON.stringify(props.data.pose)} onClick={()=>{
-                    console.log('init')
-                    detectPose()
-                }} >Pose Detect</Button>
-                {/* <Button variant="contained" color="secondary" onClick={props.deletedata} >Hapus</Button> */}
-                <br/>
-                <div style={{border:"1px solid #000"}}>
-                    <div ref={scatter_gl} style={{display:'none'}}></div>
-                </div>
-                <div style={{display:'none'}}>
-                    <Table style={{marginBottom:5, display:'none'}}>
-                        <TableRow style={{backgroundColor:"#CFCFCF"}}>
-                            <TableCell>Name</TableCell>
-                            <TableCell>x</TableCell>
-                            <TableCell>y</TableCell>
-                        </TableRow>
-                        <TableRow></TableRow>
-                        {
-                            dataPosePicture.map((item,index)=>{
-                                let display = false
-                                if(index === 11 || index === 13 || index === 15){
-                                    display = true
-                                }
-                                return(
-                                    <>
-                                        {display ? 
-                                        <TableRow>
-                                            <TableCell>{item.name}</TableCell>
-                                            <TableCell>{(item.x ).toFixed(0)}</TableCell>
-                                            <TableCell>{(item.y*-1).toFixed(0)}</TableCell>
-                                        </TableRow>: null
-                                    }
-                                    </>
-                                    
-                                )
-                            })
-                        }
-                    </Table>
-                    <Table style={{marginBottom:5}}>
-                        <TableRow style={{backgroundColor:"#CFCFCF"}}>
-                            <TableCell>Name</TableCell>
-                            <TableCell>x</TableCell>
-                            <TableCell>y</TableCell>
-                        </TableRow>
-                        <TableRow></TableRow>
-                        {
-                            dataPosePicture.map((item,index)=>{
-                                let display = false
-                                if(index === 12 || index === 14 || index === 16){
-                                    display = true
-                                }
-                                return(
-                                    <>
-                                        {display ? 
-                                        <TableRow>
-                                            <TableCell>{item.name}</TableCell>
-                                            <TableCell>{(item.x ).toFixed(0)}</TableCell>
-                                            <TableCell>{(item.y*-1).toFixed(0)}</TableCell>
-                                        </TableRow>: null
-                                    }
-                                    </>
-                                    
-                                )
-                            })
-                        }
-                    </Table>
-                    <Table>
-                        <TableRow style={{backgroundColor:"#CFCFCF"}}>
-                            <TableCell>Name</TableCell>
-                            <TableCell>x</TableCell>
-                            <TableCell>z</TableCell>
-                        </TableRow>
-                        {
-                            dataPosePicture3D.map((item,index)=>{
-                                let display = false
-                                if(index === 11 || index === 12 || index === 23 || index === 24){
-                                    display = true
-                                }
-                                return(
-                                    <>
-                                        {display ? 
-                                        <TableRow>
-                                            <TableCell>{item.name}</TableCell>
-                                            <TableCell>{(item.x * 1000).toFixed(0)}</TableCell>
-                                            <TableCell>{(item.z * 1000 * -1).toFixed(0)}</TableCell>
-                                        </TableRow>: null
-                                    }
-                                    </>
-                                    
-                                )
-                            })
-                        }
-                    </Table>
-                </div>
-            </div>
-            
-        </div>
-    )
+
+                // const imgRef = pictureList.current[0]
+                // const canvasRef = canvasScreenShootRef.current[0]
+                // console.log(imgRef)
+                // detectPose(imgRef.current,canvasRef.current, 0)
+                
+
+            }}>
+                Hitung Nilai 
+            </Button>
+        </AppBar>
+    </Container>
+  )
 }

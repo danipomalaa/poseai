@@ -14,7 +14,7 @@ export default function Traing(props) {
   }, [])
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="sm" style={{paddingTop:5}}>
       {
           [1,2].map(item=>{
             return(
@@ -25,7 +25,7 @@ export default function Traing(props) {
                       <MoreVertIcon />
                     </IconButton>
                   }
-                  title="Kata 1"
+                  title={"Kata "+item}
                   subheader="8 rangkaian gerakan dasar"
                 />
                 {/* <CardContent>
