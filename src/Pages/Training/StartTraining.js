@@ -216,7 +216,7 @@ export default function StartTraining(props) {
             
             {imgList.map((itemTake,index)=>{
                 return(
-                    <Grid item xs="3">
+                    <Grid item xs="2">
                       <img src={itemTake.img} style={{width:'100%'}} />
                       <br/>
                       <div style={{color:'white', backgroundColor:'black', width:'100%', fontSize:'bold'}}>Time :{itemTake.time}</div>
@@ -225,8 +225,8 @@ export default function StartTraining(props) {
             })}
             </Grid>
         </div>
-        <h1 style={{color:'white'}}>Timer : {timer} Player : {start? "Start": "Stop"} </h1>
-        <h1 style={{color:'white'}}>Timeline : {JSON.stringify(kihonList)} </h1>
+        {/* <h1 style={{color:'white'}}>Timer : {timer} Player : {start? "Start": "Stop"} </h1>
+        <h1 style={{color:'white'}}>Timeline : {JSON.stringify(kihonList)} </h1> */}
         <audio ref={audioRef} src={kata1audio} controls style={{display:'none'}}/>
         <AppBar position="fixed" sx={{ top: 'auto', backgroundColor:"#2f2f2f", bottom: 0, p:1, backgroundColor:'white' }}>
             <Button variant="contained" color="secondary" style={{ width:'100%'}} onClick={()=>{

@@ -33,11 +33,6 @@ export default function PoseEstimation(props) {
     const [dataPosePicture3D, setDataPosePicture3D] = useState([])
   const [dataPosePicture, setDataPosePicture] = useState([])
 
-    const [sudutSikuKiri, setSudutSikuKiri] = useState(0)
-    const [sudutSikuKanan, setSudutSikuKanan] = useState(0)
-    const [sudutKakiKiri, setSudutKakiKiri] = useState(0)
-    const [sudutKakiKanan, setSudutKakiKanan] = useState(0)
-    const [orientasiPose, setOrientasiPose] = useState(0)
     // const imgRef = useRef()
     const scatter_gl = useRef()
 
@@ -58,7 +53,7 @@ export default function PoseEstimation(props) {
 
   
 
-  const detectPose = async (imgRef, canvasRef, indexPose)=>{
+  const detectPose = async (imgRef, canvasRef, sudutTanganKiriRef, sudutTanganKananRef, sudutKakiKiriRef, sudutKakiKananRef, orientasiPoseRef, indexPose)=>{
         
         const model = posedetection.SupportedModels.BlazePose;
         console.log('model', model)
@@ -76,7 +71,7 @@ export default function PoseEstimation(props) {
         const poses = await detector.estimatePoses(imgRef,{maxPoses: 1, flipHorizontal: false});
         console.log('poses', poses)
         console.log('Detect Pose ', indexPose)
-        runCalculateAngle(poses[0])
+        runCalculateAngle(poses[0], sudutTanganKiriRef, sudutTanganKananRef, sudutKakiKiriRef, sudutKakiKananRef, orientasiPoseRef)
 
         
         const videoWidth = imgRef.width
@@ -93,11 +88,10 @@ export default function PoseEstimation(props) {
                 const ctx = canvasRef.getContext("2d")
                 drawKeypoints(pose.keypoints, ctx);
                 drawSkeleton(pose.keypoints, pose.id, ctx);
-                setDataPosePicture(pose.keypoints)
             }
-            if (pose.keypoints3D != null) {
-                setDataPosePicture3D(pose.keypoints3D)
-            }
+            // if (pose.keypoints3D != null) {
+            //     setDataPosePicture3D(pose.keypoints3D)
+            // }
         }
     }
 
@@ -241,20 +235,20 @@ export default function PoseEstimation(props) {
         });
     }
 
-    const runCalculateAngle = async(pose)=>{
+    const runCalculateAngle = async(pose, sudutTanganKiriRef, sudutTanganKananRef, sudutKakiKiriRef, sudutKakiKananRef, orientasiPoseRef,)=>{
         if(pose.keypoints[11].score >0.6 && pose.keypoints[13].score >0.6 && pose.keypoints[15].score >0.6)
          {
             console.log('sudutSikuKiriInit')
             let sudutSikuKiri = await calculateAgle(pose.keypoints[11],pose.keypoints[13],pose.keypoints[15])
             console.log('sudutSikuKiriResult', sudutSikuKiri)
-            setSudutSikuKiri(sudutSikuKiri.sudut)
+            sudutTanganKiriRef.innerText = sudutSikuKiri.sudut.toFixed(0)
         }
 
          if(pose.keypoints[12].score >0.6 && pose.keypoints[14].score >0.6 && pose.keypoints[16].score >0.6)
          {
             let sudutSikuKanan = await calculateAgle(pose.keypoints[12],pose.keypoints[14],pose.keypoints[16])
             console.log('sudutSikuKanan', sudutSikuKanan)
-            setSudutSikuKanan(sudutSikuKanan.sudut)
+            sudutTanganKananRef.innerText = sudutSikuKanan.sudut.toFixed(0)
          }
 
 
@@ -263,31 +257,32 @@ export default function PoseEstimation(props) {
             console.log('sudutKakiKiriInit')
             let sudutKakiKiri = await calculateAgle(pose.keypoints[24],pose.keypoints[26],pose.keypoints[28])
             console.log('sudutKakiKiriResult', sudutKakiKiri)
-            setSudutKakiKiri(sudutKakiKiri.sudut)
+            sudutKakiKiriRef.innerText = sudutKakiKiri.sudut.toFixed(0)
         }
 
         if(pose.keypoints[23].score >0.6 && pose.keypoints[25].score >0.6 && pose.keypoints[27].score >0.6)
         {
             let sudutKakiKanan = await calculateAgle(pose.keypoints[23],pose.keypoints[25],pose.keypoints[27])
             console.log('sudutKakiKanan', sudutKakiKanan)
-            setSudutKakiKanan(sudutKakiKanan.sudut)
+            sudutKakiKananRef.innerText = sudutKakiKanan.sudut.toFixed(0)
         }
 
         
         console.log('orientation cek', dataPoses)
-        if(props.index>0){
-            let pose1 = {
-                keypoint1 : pose.keypoints3D[23],
-                keypoint2 : pose.keypoints3D[24]
-            }
-            let pose2 = {
-                keypoint1 : dataPoses[0]?.pose?.keypoints3D[23],
-                keypoint2 : dataPoses[0]?.pose?.keypoints3D[24]
-            }
-            let orientation  = calculateOrientation(pose2,pose1)
-            console.log('orientation', orientation)
-            setOrientasiPose(orientation.sudut)
-        }
+        // if(props.index>0){
+        //     let pose1 = {
+        //         keypoint1 : pose.keypoints3D[23],
+        //         keypoint2 : pose.keypoints3D[24]
+        //     }
+        //     let pose2 = {
+        //         keypoint1 : dataPoses[0]?.pose?.keypoints3D[23],
+        //         keypoint2 : dataPoses[0]?.pose?.keypoints3D[24]
+        //     }
+        //     let orientation  = calculateOrientation(pose2,pose1)
+        //     console.log('orientation', orientation)
+
+        //     setOrientasiPose(orientation.sudut)
+        // }
     }
 
     const calculateAgle = (keypoint1, keypoint2, keypoint3)=>{
@@ -391,6 +386,11 @@ export default function PoseEstimation(props) {
     const canvasScreenShootRef = useRef([])
     const imgSampleRef = useRef()
     const canvasSampleRef = useRef()
+    const sudutTanganKiri = useRef([])
+    const sudutTanganKanan = useRef([])
+    const sudutKakiKiri = useRef([])
+    const sudutKakiKanan = useRef([])
+    const orientasiPose = useRef([])
 
     const [dataPoseLocal, setDataPoseLocal] = useState([])
 
@@ -399,23 +399,51 @@ export default function PoseEstimation(props) {
         console.log('resPose', resPose)
         pictureList.current = resPose.map((_, i) => pictureList.current[i] ?? createRef());
         canvasScreenShootRef.current = resPose.map((_, i) => canvasScreenShootRef.current[i] ?? createRef());
+
+        sudutTanganKiri.current = resPose.map((_, i) => sudutTanganKiri.current[i] ?? createRef());
+        sudutTanganKanan.current = resPose.map((_, i) => sudutTanganKanan.current[i] ?? createRef());
+        sudutKakiKiri.current = resPose.map((_, i) => sudutKakiKiri.current[i] ?? createRef());
+        sudutKakiKanan.current = resPose.map((_, i) => sudutKakiKanan.current[i] ?? createRef());
+        orientasiPose.current = resPose.map((_, i) => orientasiPose.current[i] ?? createRef());
         setDataPoseLocal(resPose)
     }
 
     useEffect(()=>{
         getData()
+        
+        
     }, [])
 
+    const testRef = useRef()
+
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="sm" sx={{pt:1}}>
+        {/* <p>Test<span ref={testRef}>2</span></p>
+        <Button onClick={()=>{
+            
+            console.log('testRef', testRef.current.innerText )
+            testRef.current.innerText = "3"
+        }}>cek</Button> */}
+        <Grid container spacing={2}>
+
+        
         {
            dataPoses.map((itemTake,index)=>{
             return (
                 <>
-                    <div style={{position:'relative',height:280}}>
-                        <canvas ref={canvasScreenShootRef.current[index]} style={{position:'absolute', width:'100%', zIndex:11}} />
-                        <img ref={pictureList.current[index]} src={itemTake.img} style={{width:'100%'}} />
-                    </div>
+                    <Grid item xs={6}>
+                        <div style={{position:'relative',height:280, width:'100%'}}>
+                            <canvas ref={canvasScreenShootRef.current[index]} style={{position:'absolute', width:'100%', zIndex:11}} />
+                            <img ref={pictureList.current[index]} src={itemTake.img} style={{width:'100%'}} />
+                        </div>
+                    </Grid>
+                    <Grid item xs={6}>
+                        Hasil
+                        <p>Siku ... Kiri : <span ref={sudutTanganKiri.current[index]}>-</span> &nbsp; - Kanan : <span ref={sudutTanganKanan.current[index]}>-</span></p>
+                        <p>Kaki ... Kiri : <span ref={sudutKakiKiri.current[index]}>-</span> &nbsp; - Kanan : <span ref={sudutKakiKanan.current[index]}>-</span></p>
+                        <p>Rotasi Badan : <span ref={orientasiPose.current[index]}>-</span></p>
+                    </Grid>
+                    
                     {/* <div>
                         <p>Siku ... Kiri : {Math.round(sudutSikuKiri)} ({Math.round(sudutSikuKiri)-180}) &nbsp; - Kanan : {Math.round(sudutSikuKanan)} ({Math.round(sudutSikuKanan)-180})</p>
                         <p>Kaki ... Kiri : {Math.round(sudutKakiKiri)} ({Math.round(sudutKakiKiri)-180}) &nbsp; - Kanan : {Math.round(sudutKakiKanan)} ({Math.round(sudutKakiKanan)-180})</p>
@@ -426,6 +454,8 @@ export default function PoseEstimation(props) {
             // <PictureList ref={pictureList[]} displayImage={true} data={itemTake} index={index}/>
             })
         }
+        
+        </Grid>
 
         
         <AppBar position="fixed" sx={{ top: 'auto', backgroundColor:"#2f2f2f", bottom: 0, p:1, backgroundColor:'white' }}>
@@ -445,7 +475,20 @@ export default function PoseEstimation(props) {
                     dataPoseLocal.forEach((itemPose,indexPose)=>{
                         const imgRef = pictureList.current[indexPose]
                         const canvasRef = canvasScreenShootRef.current[indexPose]
-                        detectPose(imgRef.current,canvasRef.current, indexPose)
+                        
+                        const sudutTanganKiriRef = sudutTanganKiri.current[indexPose]
+                        const sudutTanganKananRef = sudutTanganKanan.current[indexPose]
+                        const sudutKakiKiriRef = sudutKakiKiri.current[indexPose]
+                        const sudutKakiKananRef = sudutKakiKanan.current[indexPose]
+                        const orientasiPoseRef = orientasiPose.current[indexPose]
+
+                        detectPose(imgRef.current,canvasRef.current, 
+                            sudutTanganKiriRef.current, 
+                            sudutTanganKananRef.current,
+                            sudutKakiKiriRef.current,
+                            sudutKakiKananRef.current,
+                            orientasiPoseRef.current,
+                            indexPose)
                     })
                 }, 2000)
                 
