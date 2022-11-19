@@ -94,7 +94,7 @@ export default function AddTraining(props) {
 
 
         <AppBar position="fixed" sx={{ top: 'auto', bottom: 0, p:1, backgroundColor:'white' }}>
-            <Alert severity="info" sx={{mt:1, mb:1}}>Sebelum memulai pelatihan pastikan anda sdh mengetahui urutan gerakan dasar (kihon). Dengar audio instrukso pelatihan untuk lebih jelasnya diatas.</Alert>
+            <Alert severity="info" sx={{mt:1, mb:1}}>Sebelum memulai pelatihan pastikan anda sdh mengetahui urutan gerakan dasar (kihon) KATA {kata}. Dengar audio instrukso pelatihan untuk lebih jelasnya dibawah ini.</Alert>
             <audio src={kata ==="1"? kata1audio : kata2audio} style={{width:'100%'}} controls />
             <Button variant="contained" color="secondary" style={{ width:'100%'}} onClick={()=>{
                 props.history.push('/app/training/StartTraining?token='+token+'&memberid='+memberid+'&kata='+kata+'&camera='+cameraTake+'&width='+size.width+'&height='+size.height+'&isLandscape='+isLandscape+'&ratio='+ratio)

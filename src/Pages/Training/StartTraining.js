@@ -37,6 +37,8 @@ export default function StartTraining(props) {
     const ratio = query.get("ratio")
     const cameraTake = query.get("camera")
     const kata = query.get("kata")
+    const token = query.get("token")
+    const memberid = query.get("memberid")
 
     // const isLandscape = size.height <= size.width;
     // const ratio = isLandscape ? size.width / size.height : size.height / size.width;
@@ -208,7 +210,7 @@ export default function StartTraining(props) {
         />
         
          {/* <button onClick={capture}>Capture photo</button> */}
-        <div style={{backgroundColor:"#EFEFEF", opacity:0.5, padding:10, position:'absolute', bottom:100, left:40, minWidth:150}}>
+        {/* <div style={{backgroundColor:"#EFEFEF", opacity:0.5, padding:10, position:'absolute', bottom:100, left:40, minWidth:150}}>
             {
                 ["Start", "Gedan Barai", "OiTsuki", "Uci Uke", "OiTsuki", "Gedan Barai"].map(item=>{
                     return(
@@ -220,7 +222,7 @@ export default function StartTraining(props) {
                 })
             }
            
-        </div>
+        </div> */}
         <div style={{position:'absolute', bottom:50,zIndex:10}}>
             <Grid container spacing={1}>
               
@@ -250,7 +252,7 @@ export default function StartTraining(props) {
                   
               </Button>:
               lastTake? 
-              <Button variant="contained" color="secondary" style={{ width:'100%'}} onClick={()=>props.history.push('/app/training/estimation')}>
+              <Button variant="contained" color="secondary" style={{ width:'100%'}} onClick={()=>props.history.push('/app/training/estimation?kata='+kata+'&token='+token+'&memberid='+memberid)}>
                 Lanjut Penilaian
               </Button>:
               <Button variant="contained" color="secondary" style={{ width:'100%'}} onClick={()=>window.location.reload()}>

@@ -33,6 +33,11 @@ export default function PoseEstimation(props) {
     const [dataPosePicture3D, setDataPosePicture3D] = useState([])
   const [dataPosePicture, setDataPosePicture] = useState([])
 
+  let query = useQuery();
+    const kata = query.get("kata")
+    const token = query.get("token")
+    const memberid = query.get("memberid")
+
     // const imgRef = useRef()
     const scatter_gl = useRef()
 
@@ -435,17 +440,20 @@ export default function PoseEstimation(props) {
            dataPoses.map((itemTake,index)=>{
             return (
                 <>
-                    <Grid item xs={6}>
+                    <Grid item xs={3}>
                         <div style={{position:'relative',height:280, width:'100%'}}>
                             <canvas ref={canvasScreenShootRef.current[index]} style={{position:'absolute', width:'100%', zIndex:11}} />
                             <img ref={pictureList.current[index]} src={itemTake.img} style={{width:'100%'}} />
                         </div>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={3}>
+                        <img src={`https://simari.id/Dataset/Kata${kata}/${index+1}.jpg`} style={{width:'100%'}} />
+                    </Grid>
+                    <Grid item xs={6} style={{fontSize:11}}>
                         Hasil
-                        <p>Siku ... Kiri : <span ref={sudutTanganKiri.current[index]}>-</span> &nbsp; - Kanan : <span ref={sudutTanganKanan.current[index]}>-</span></p>
-                        <p>Kaki ... Kiri : <span ref={sudutKakiKiri.current[index]}>-</span> &nbsp; - Kanan : <span ref={sudutKakiKanan.current[index]}>-</span></p>
-                        <p>Rotasi Badan : <span ref={orientasiPose.current[index]}>-</span></p>
+                        <p>Upper L : <span ref={sudutTanganKiri.current[index]}>-</span> &nbsp; - R : <span ref={sudutTanganKanan.current[index]}>-</span></p>
+                        <p>Lower ... L : <span ref={sudutKakiKiri.current[index]}>-</span> &nbsp; - R : <span ref={sudutKakiKanan.current[index]}>-</span></p>
+                        <p>Rotasi : <span ref={orientasiPose.current[index]}>-</span></p>
                     </Grid>
                     
                     {/* <div>
