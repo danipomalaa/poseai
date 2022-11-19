@@ -1,8 +1,10 @@
 import { FormControl,Container,TextField, InputLabel, Typography, 
-    Button, IconButton, Select, MenuItem, ButtonGroup, Grid, AppBar, FormLabel, RadioGroup, Radio, FormControlLabel } from '@mui/material'
+    Button, IconButton, Select, MenuItem, ButtonGroup, Grid, AppBar, FormLabel, RadioGroup, Radio, FormControlLabel, Alert } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
 import useQuery from '../../Utils/QueryParams';
+import kata1audio from './../../SourceMedia/kata1.mp3'
+import kata2audio from './../../SourceMedia/kata2.mp3'
 
 function useWindowSize() {
     // Initialize state with undefined width/height so server and client renders match
@@ -40,9 +42,9 @@ export default function AddTraining(props) {
     const memberid = query.get("memberid")
     const token = query.get("token")
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="sm" sx={{pt:1,pb:30}}>
 
-        <FormControl sx={{ mb:1,width:'100%', mt:1}} variant="outlined">
+        {/* <FormControl sx={{ mb:1,width:'100%', mt:1}} variant="outlined">
             <Select value="0">
                 <MenuItem value="0">Arah Kamera</MenuItem>
             </Select>
@@ -51,7 +53,7 @@ export default function AddTraining(props) {
             <Select value="0">
                 <MenuItem value="0">Video Latihan</MenuItem>
             </Select>
-        </FormControl>
+        </FormControl> */}
         {/* <div style={{mb:1, width:'100%', height:80}}>
             <img />
         </div>
@@ -75,9 +77,25 @@ export default function AddTraining(props) {
             <FormLabel id="demo-radio-buttons-group-label">Video Dataset</FormLabel>
             <video src={`https://simari.id/Dataset/kata${kata}.mp4`} style={{width:'100%'}} controls />
         </FormControl>
+        
+        <Grid container spacing={2} sx={{mt:2}}>
+            
+            {
+                [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20].map(item=>{
+                    return <Grid item xs={2}>
+                        <img src={`https://simari.id/Dataset/Kata${kata}/${item}.jpg`} style={{width:'100%', height:100}} />
+                    </Grid>
+                })
+            }
+           
+        </Grid>
+
+        
 
 
         <AppBar position="fixed" sx={{ top: 'auto', bottom: 0, p:1, backgroundColor:'white' }}>
+            <Alert severity="info" sx={{mt:1, mb:1}}>Sebelum memulai pelatihan pastikan anda sdh mengetahui urutan gerakan dasar (kihon). Dengar audio instrukso pelatihan untuk lebih jelasnya diatas.</Alert>
+            <audio src={kata ==="1"? kata1audio : kata2audio} style={{width:'100%'}} controls />
             <Button variant="contained" color="secondary" style={{ width:'100%'}} onClick={()=>{
                 props.history.push('/app/training/StartTraining?token='+token+'&memberid='+memberid+'&kata='+kata+'&camera='+cameraTake+'&width='+size.width+'&height='+size.height+'&isLandscape='+isLandscape+'&ratio='+ratio)
             }}>Mulai Latihan</Button>
