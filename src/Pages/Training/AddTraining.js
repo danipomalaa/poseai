@@ -37,6 +37,8 @@ export default function AddTraining(props) {
     const [cameraTake, setCameraTake] = useState("user")
     let query = useQuery();
     const kata = query.get("kata")
+    const memberid = query.get("memberid")
+    const token = query.get("token")
   return (
     <Container maxWidth="sm">
 
@@ -69,10 +71,15 @@ export default function AddTraining(props) {
         </RadioGroup>
         </FormControl>
 
+        <FormControl>
+            <FormLabel id="demo-radio-buttons-group-label">Video Dataset</FormLabel>
+            <video src={`https://simari.id/Dataset/kata${kata}.mp4`} style={{width:'100%'}} controls />
+        </FormControl>
+
 
         <AppBar position="fixed" sx={{ top: 'auto', bottom: 0, p:1, backgroundColor:'white' }}>
             <Button variant="contained" color="secondary" style={{ width:'100%'}} onClick={()=>{
-                props.history.push('/app/training/StartTraining?kata='+kata+'&camera='+cameraTake+'&width='+size.width+'&height='+size.height+'&isLandscape='+isLandscape+'&ratio='+ratio)
+                props.history.push('/app/training/StartTraining?token='+token+'&memberid='+memberid+'&kata='+kata+'&camera='+cameraTake+'&width='+size.width+'&height='+size.height+'&isLandscape='+isLandscape+'&ratio='+ratio)
             }}>Mulai Latihan</Button>
         </AppBar>
     </Container>

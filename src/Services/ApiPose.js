@@ -27,10 +27,10 @@ api.interceptors.request.use(
     }
 )
 
-const getOperational = (data) => api.get("/operational/", data)
+const getMember = (data) => api.get("/club/member", data)
 
 export const apis = {
-    getOperational,
+    getMember,
 }
 
 export default apis

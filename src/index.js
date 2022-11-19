@@ -12,6 +12,7 @@ root.render(
     providers={[
       <Provider.SampleProvider key={0} />,
       <Provider.PoseProvider key={1} />,
+      <Provider.MemberProvider key={1} />,
     ]}
   >
     <React.StrictMode>

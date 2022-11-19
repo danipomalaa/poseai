@@ -1,4 +1,4 @@
-const URL_API = "https://akdaapi.lrtjakarta.co.id"
+const URL_API = "http://api.simari.id/"
 const VERSION = "1.0.0"
 
 export default {
