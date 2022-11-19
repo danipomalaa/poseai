@@ -441,7 +441,7 @@ export default function PoseEstimation(props) {
             return (
                 <>
                     <Grid item xs={3}>
-                        <div style={{position:'relative',height:280, width:'100%'}}>
+                        <div style={{position:'relative',height:120, width:'100%'}}>
                             <canvas ref={canvasScreenShootRef.current[index]} style={{position:'absolute', width:'100%', zIndex:11}} />
                             <img ref={pictureList.current[index]} src={itemTake.img} style={{width:'100%'}} />
                         </div>
@@ -452,7 +452,7 @@ export default function PoseEstimation(props) {
                     <Grid item xs={6} style={{fontSize:11}}>
                         Hasil
                         <p>Upper L : <span ref={sudutTanganKiri.current[index]}>-</span> &nbsp; - R : <span ref={sudutTanganKanan.current[index]}>-</span></p>
-                        <p>Lower ... L : <span ref={sudutKakiKiri.current[index]}>-</span> &nbsp; - R : <span ref={sudutKakiKanan.current[index]}>-</span></p>
+                        <p>Lower L : <span ref={sudutKakiKiri.current[index]}>-</span> &nbsp; - R : <span ref={sudutKakiKanan.current[index]}>-</span></p>
                         <p>Rotasi : <span ref={orientasiPose.current[index]}>-</span></p>
                     </Grid>
                     
