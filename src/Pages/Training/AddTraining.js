@@ -1,7 +1,8 @@
 import { FormControl,Container,TextField, InputLabel, Typography, 
-    Button, IconButton, Select, MenuItem, ButtonGroup, Grid, AppBar } from '@mui/material'
+    Button, IconButton, Select, MenuItem, ButtonGroup, Grid, AppBar, FormLabel, RadioGroup, Radio, FormControlLabel } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
+import useQuery from '../../Utils/QueryParams';
 
 function useWindowSize() {
     // Initialize state with undefined width/height so server and client renders match
@@ -33,6 +34,9 @@ export default function AddTraining(props) {
     const size = useWindowSize();
     const isLandscape = size.height <= size.width;
     const ratio = isLandscape ? size.width / size.height : size.height / size.width;
+    const [cameraTake, setCameraTake] = useState("user")
+    let query = useQuery();
+    const kata = query.get("kata")
   return (
     <Container maxWidth="sm">
 
@@ -46,15 +50,29 @@ export default function AddTraining(props) {
                 <MenuItem value="0">Video Latihan</MenuItem>
             </Select>
         </FormControl>
-        <div style={{mb:1, width:'100%', height:80}}>
+        {/* <div style={{mb:1, width:'100%', height:80}}>
             <img />
         </div>
-        <Typography>Gerakan Dasar</Typography>
+        <Typography>Gerakan Dasar</Typography> */}
+
+        <FormControl>
+        <FormLabel id="demo-radio-buttons-group-label">Kamera</FormLabel>
+        <RadioGroup
+            aria-labelledby="demo-radio-buttons-group-label"
+            defaultValue="female"
+            name="radio-buttons-group"
+            value={cameraTake}
+            onChange={(e)=>{console.log('e',e.target.value);setCameraTake(e.target.value)}}
+        >
+            <FormControlLabel value="user" control={<Radio />} label="Depan" />
+            <FormControlLabel value="environment" control={<Radio />} label="Belakang" />
+        </RadioGroup>
+        </FormControl>
 
 
         <AppBar position="fixed" sx={{ top: 'auto', bottom: 0, p:1, backgroundColor:'white' }}>
             <Button variant="contained" color="secondary" style={{ width:'100%'}} onClick={()=>{
-                props.history.push('/app/training/StartTraining?width='+size.width+'&height='+size.height+'&isLandscape='+isLandscape+'&ratio='+ratio)
+                props.history.push('/app/training/StartTraining?kata='+kata+'&camera='+cameraTake+'&width='+size.width+'&height='+size.height+'&isLandscape='+isLandscape+'&ratio='+ratio)
             }}>Mulai Latihan</Button>
         </AppBar>
     </Container>

@@ -10,6 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import CheckIcon from '@mui/icons-material/Check';
 import Webcam from "react-webcam";
 import kata1audio from './../../SourceMedia/kata1.mp3'
+import kata2audio from './../../SourceMedia/kata2.mp3'
 import "./style.css"
 import { PoseContext } from "./../../Context/index"
 import * as posedetection from '@tensorflow-models/pose-detection';
@@ -34,6 +35,8 @@ export default function StartTraining(props) {
     const size_height = query.get("height")
     const isLandscape = query.get("isLandscape")
     const ratio = query.get("ratio")
+    const cameraTake = query.get("camera")
+    const kata = query.get("kata")
 
     // const isLandscape = size.height <= size.width;
     // const ratio = isLandscape ? size.width / size.height : size.height / size.width;
@@ -75,6 +78,8 @@ export default function StartTraining(props) {
         setStartRecording(true)
       }
     }
+
+    const [lastTake, setLastTake ] = useState(false)
     
 
     useEffect(() => {
@@ -98,12 +103,18 @@ export default function StartTraining(props) {
       }, [start, capturePose]);
 
       function capturePose(){
-        const captureListCheck = kihonList.filter(x=>x === (timer))
+        console.log('kihonList', kihonList, 'kata', kata)
+        const kihonListTime = kihonList[(kata-1)]?.time
+        console.log('kihonListTime', kihonListTime)
+        const captureListCheck = kihonListTime.filter(x=> x === (timer))
+        const maxTime = kihonListTime[kihonListTime.length-1]
         console.log('captureListCheck', captureListCheck.length, 'start', start, 'timer', timer, 'startRecording', startRecording)
         if(captureListCheck.length == 1){
           capture();
-          if(timer === 90)
+          if(kihonList.filter(x=>x.kata === kata))
+          if(timer == maxTime)
           {
+            setLastTake(true)
             setOpenFinish(true)
           }
         }
@@ -111,7 +122,7 @@ export default function StartTraining(props) {
 
     const [startRecording, setStartRecording] = useState(false)
 
-    const { dataPoses, addPose, deletePose, changeLabel, kihonList } = useContext(PoseContext)
+    const { dataPoses, addPose, resetPose, deletePose, changeLabel, kihonList } = useContext(PoseContext)
 
     const play_audio = ()=>{
         const audio = audioRef.current
@@ -174,13 +185,13 @@ export default function StartTraining(props) {
             </DialogTitle>
             <DialogContent dividers>
                 <DialogContentText id="alert-dialog-description">
-                   Lanjutkan proses penilaian dengan pelatihan AI anda.
+                   Lanjutkan proses ke penilaian
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={()=>{props.history.push('/app/training/estimation')
+                <Button variant="contained" color="primary" onClick={()=>{handleClose()
                 }} autoFocus>
-                    Proses
+                    Tutup
                 </Button>
             </DialogActions>
         </Dialog>
@@ -193,7 +204,7 @@ export default function StartTraining(props) {
             width={size_width}
             screenshotFormat="image/jpeg"
             ref={webcamRef}
-            videoConstraints={{facingMode: 'user', aspectRatio: ratio}}
+            videoConstraints={{facingMode: cameraTake, aspectRatio: ratio}}
         />
         
          {/* <button onClick={capture}>Capture photo</button> */}
@@ -211,15 +222,15 @@ export default function StartTraining(props) {
            
         </div>
         <div style={{position:'absolute', bottom:50,zIndex:10}}>
-            <Grid container spacing={2}>
+            <Grid container spacing={1}>
               
             
             {imgList.map((itemTake,index)=>{
                 return(
                     <Grid item xs="2">
-                      <img src={itemTake.img} style={{width:'100%'}} />
+                      <img src={itemTake.img} style={{width:'99%'}} />
                       <br/>
-                      <div style={{color:'white', backgroundColor:'black', width:'100%', fontSize:'bold'}}>Time :{itemTake.time}</div>
+                      <div style={{color:'white', backgroundColor:'black', width:'100%', fontSize:'bold', fontSize:8}}>Time :{itemTake.time}</div>
                     </Grid>
                 )
             })}
@@ -227,16 +238,26 @@ export default function StartTraining(props) {
         </div>
         {/* <h1 style={{color:'white'}}>Timer : {timer} Player : {start? "Start": "Stop"} </h1>
         <h1 style={{color:'white'}}>Timeline : {JSON.stringify(kihonList)} </h1> */}
-        <audio ref={audioRef} src={kata1audio} controls style={{display:'none'}}/>
+        <audio ref={audioRef} src={kata === "1" ? kata1audio: kata2audio} controls style={{display:'none'}}/>
         <AppBar position="fixed" sx={{ top: 'auto', backgroundColor:"#2f2f2f", bottom: 0, p:1, backgroundColor:'white' }}>
-            <Button variant="contained" color="secondary" style={{ width:'100%'}} onClick={()=>{
-                buttonRecording()
-            }}>
             {
-              start ? "Pause" : "Play"
+              !start ?
+              <Button variant="contained" color="primary" style={{ width:'100%'}} onClick={()=>{
+                resetPose()
+                  buttonRecording()
+              }}>
+                Play
+                  
+              </Button>:
+              lastTake? 
+              <Button variant="contained" color="secondary" style={{ width:'100%'}} onClick={()=>props.history.push('/app/training/estimation')}>
+                Lanjut Penilaian
+              </Button>:
+              <Button variant="contained" color="secondary" style={{ width:'100%'}} onClick={()=>window.location.reload()}>
+                Stop
+              </Button>
             }
-                
-            </Button>
+            
         </AppBar>
     </Container>
   )

@@ -18,7 +18,7 @@ export default function Traing(props) {
       {
           [1,2].map(item=>{
             return(
-              <Card sx={{mt:1,mb:1}} onClick={()=>props.history.push('/app/training/addtraining')}>
+              <Card sx={{mt:1,mb:1}} onClick={()=>props.history.push('/app/training/addtraining?kata='+item)}>
                 <CardHeader
                   action={
                     <IconButton aria-label="settings">

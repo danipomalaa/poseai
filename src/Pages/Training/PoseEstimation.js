@@ -93,6 +93,7 @@ export default function PoseEstimation(props) {
             //     setDataPosePicture3D(pose.keypoints3D)
             // }
         }
+        return indexPose
     }
 
     const [scatterGLHasInitialized, setScatterGLHasInitialized] = useState(false)
@@ -207,6 +208,9 @@ export default function PoseEstimation(props) {
         '#9a6324', '#000075', '#f58231', '#4363d8', '#ffd8b1', '#dcbeff', '#808000',
         '#ffe119', '#911eb4', '#bfef45', '#f032e6', '#3cb44b', '#a9a9a9'
       ];
+
+    const [calculateProcess, setCalculateProcess] = useState(false)
+    const [calculateProcessStep, setCalculateProcessStep] = useState("")
 
     function drawSkeleton(keypoints, poseId, ctx) {
         // Each poseId is mapped to a color in the color palette.
@@ -461,6 +465,9 @@ export default function PoseEstimation(props) {
         <AppBar position="fixed" sx={{ top: 'auto', backgroundColor:"#2f2f2f", bottom: 0, p:1, backgroundColor:'white' }}>
             <Button variant="contained" color="secondary" style={{ width:'100%'}} onClick={async ()=>{
 
+                if(!calculateProcess){
+                    
+                setCalculateProcess(true)
                 const model = posedetection.SupportedModels.BlazePose;
                 const detectorConfig = {
                 runtime: 'tfjs',
@@ -470,9 +477,9 @@ export default function PoseEstimation(props) {
                 const detector = await posedetection.createDetector(model, detectorConfig)
                 const poses = await detector.estimatePoses(pictureList.current[0].current,{maxPoses: 1, flipHorizontal: false});
                 console.log('Initialisasi Pose Detection', poses)
-
+                setCalculateProcessStep("Init Pose")
                 setTimeout(()=>{
-                    dataPoseLocal.forEach((itemPose,indexPose)=>{
+                    dataPoseLocal.forEach(async(itemPose,indexPose)=>{
                         const imgRef = pictureList.current[indexPose]
                         const canvasRef = canvasScreenShootRef.current[indexPose]
                         
@@ -482,15 +489,21 @@ export default function PoseEstimation(props) {
                         const sudutKakiKananRef = sudutKakiKanan.current[indexPose]
                         const orientasiPoseRef = orientasiPose.current[indexPose]
 
-                        detectPose(imgRef.current,canvasRef.current, 
+                        const res = await detectPose(imgRef.current,canvasRef.current, 
                             sudutTanganKiriRef.current, 
                             sudutTanganKananRef.current,
                             sudutKakiKiriRef.current,
                             sudutKakiKananRef.current,
                             orientasiPoseRef.current,
-                            indexPose)
+                            indexPose+1)
+
+                        setCalculateProcessStep("Image "+ res)
+                        if(res == dataPoseLocal.length){
+                            setCalculateProcess(false)
+                        }
                     })
                 }, 2000)
+                }
                 
 
                 // const imgRef = pictureList.current[0]
@@ -500,7 +513,9 @@ export default function PoseEstimation(props) {
                 
 
             }}>
-                Hitung Nilai 
+                {calculateProcess ? 
+                calculateProcessStep : 
+                "Hitung Penilaian"} 
             </Button>
         </AppBar>
     </Container>
